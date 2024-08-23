@@ -24,10 +24,13 @@ export const useChat = () => {
       const response = await Request('POST', '/chat/send', {
         message,
       });
+
+      const system_message = response.data.bot_message;
+
       return {
-        sender_type: response.data.sender_type,
-        message: response.data.message,
-        timestamp: new Date(response.data.timestamp),
+        sender_type: system_message.sender_type,
+        message: system_message.message,
+        timestamp: new Date(system_message.timestamp),
         status: MessageStatus.Sent,
       };
     } catch (error) {

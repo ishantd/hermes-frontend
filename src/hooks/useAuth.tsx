@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { Request } from '@/networking';
 import { useNavigate } from 'react-router-dom';
 
+type User = {
+  id: string;
+  email: string;
+  name: string;
+};
+
 export const useAuth = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   const login = async (email: string, password: string) => {
