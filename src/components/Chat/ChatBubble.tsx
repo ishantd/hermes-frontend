@@ -84,7 +84,9 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
     <React.Fragment>
       <div className="bg-blue-500 p-4 rounded-lg">
         <p className="text-white">{messageString}</p>
-        <span className="text-xs text-gray-300">{formatTimestamp(timestamp)}</span>
+        <span className="text-xs text-gray-300">
+          {formatTimestamp(timestamp)}
+        </span>
       </div>
       <MessageStatusIndicator
         status={currentMessageStatus}
@@ -101,7 +103,9 @@ const SystemChatBubble: React.FC<ChatBubbleMessageProps> = ({
   return (
     <div className="bg-gray-800 p-4 rounded-lg">
       <p className="text-white">{messageString}</p>
-      <span className="text-xs text-gray-400">{formatTimestamp(timestamp)}</span>
+      <span className="text-xs text-gray-400">
+        {formatTimestamp(timestamp)}
+      </span>
     </div>
   );
 };

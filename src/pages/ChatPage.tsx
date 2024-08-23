@@ -55,7 +55,8 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     // Scroll to bottom whenever messages change
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -78,7 +79,9 @@ const ChatPage: React.FC = () => {
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6 bg-blue-600 text-white">
           <h1 className="text-2xl font-bold">Hermes Chat</h1>
-          <p className="text-sm">Wraps on top of GPT, sends back generated text.</p>
+          <p className="text-sm">
+            Wraps on top of GPT, sends back generated text.
+          </p>
         </div>
         <div
           ref={chatContainerRef}
