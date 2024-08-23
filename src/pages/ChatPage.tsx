@@ -1,14 +1,21 @@
 import ChatBubble, { Message } from '@/components/Chat/ChatBubble';
 import { Button } from '@/components/ui/button';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat } from '@/hooks/useChat';
 import { PaperAirplaneIcon } from '@heroicons/react/16/solid';
 import React, { useEffect, useRef, useState } from 'react';
 import { createContext } from 'react';
+import Logo from '@/assets/images/logo.webp'; // Assuming you have a logo image to add to the header
 
-const ChatContext = createContext("0");
+const ChatContext = createContext('0');
 
 const MessageBar: React.FC<{
   onMessageSend: (messageText: string) => void;
@@ -53,7 +60,7 @@ const ChatPage: React.FC = () => {
   const { getChatHistory, getUserMessage, getContexts } = useChat();
   const [messages, setMessages] = useState<Message[]>([]);
   const [contexts, setContexts] = useState<any[]>([]);
-  const [selectedContext, setSelectedContext] = useState("0");
+  const [selectedContext, setSelectedContext] = useState('0');
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,7 +85,7 @@ const ChatPage: React.FC = () => {
   const fetchContexts = async () => {
     const contextData = await getContexts();
     if (contextData) {
-      setContexts([{ id: "0", title: 'Default' }, ...contextData]);
+      setContexts([{ id: '0', title: 'Default' }, ...contextData]);
     }
   };
 
@@ -100,22 +107,56 @@ const ChatPage: React.FC = () => {
 
   return (
     <ChatContext.Provider value={selectedContext}>
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="p-6 bg-blue-600 text-white flex justify-between items-center">
-          <div>
-            <h3 className="text-2xl font-bold">Hermes Chat</h3>
-            <p className="text-sm">
-              Wraps on top of GPT, sends back generated text.
+      {/* div to make logout button top right corner placement */}
+      <div className="fixed top-0 right-0 p-4">
+        <Button
+          onClick={logout}
+          className="bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600"
+        >
+          Logout
+        </Button>
+      </div>
+      {/* div to make logout button top right corner placement */}
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className="p-6 bg-white flex flex-col items-center text-center">
+            <img
+              src={Logo}
+              alt="Hermes Logo"
+              className="w-12 h-12 rounded-full mb-4"
+            />
+            <h3 className="text-lg font-semibold text-gray-900">
+              Hey👋, I'm Hermes
+            </h3>
+            <p className="text-sm text-gray-500">
+              Ask me anything or pick a place to start
             </p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div
+            ref={chatContainerRef}
+            className="p-4 space-y-4 h-[calc(100vh-256px)] overflow-y-auto bg-gray-50"
+          >
+            {messages.map((message, index) => (
+              <ChatBubble
+                key={index}
+                {...message}
+                avatarSeed={user?.email || 'user'}
+                onSystemMessage={onSystemMessage}
+                onDelete={handleMessageDelete}
+              />
+            ))}
+          </div>
+          <div className="p-4 border-t">
+            <MessageBar onMessageSend={sendUserMessage} />
+          </div>
+          <div className="p-2 flex flex-col items-start pb-4">
+            <span className="text-gray-500 mb-2">Context</span>
             <Select
               value={selectedContext}
               onValueChange={(value) => setSelectedContext(value)}
             >
-              <SelectTrigger className="bg-white text-black rounded-lg">
-                <SelectValue placeholder="Select Context" />
+              <SelectTrigger className="w-[200px] bg-gray-100 border border-gray-300 rounded-lg text-sm">
+                <SelectValue placeholder="Onboarding" />
               </SelectTrigger>
               <SelectContent>
                 {contexts.map((context) => (
@@ -125,36 +166,11 @@ const ChatPage: React.FC = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Button
-              onClick={logout}
-              className="bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600"
-            >
-              Logout
-            </Button>
           </div>
         </div>
-        <div
-          ref={chatContainerRef}
-          className="p-4 space-y-4 h-[calc(100vh-256px)] overflow-y-auto"
-        >
-          {messages.map((message, index) => (
-            <ChatBubble
-              key={index}
-              {...message}
-              avatarSeed={user?.email || 'user'}
-              onSystemMessage={onSystemMessage}
-              onDelete={handleMessageDelete}
-            />
-          ))}
-        </div>
-        <div className="p-4 border-t">
-          <MessageBar onMessageSend={sendUserMessage} />
-        </div>
       </div>
-    </div>
     </ChatContext.Provider>
   );
-
 };
 
 export default ChatPage;

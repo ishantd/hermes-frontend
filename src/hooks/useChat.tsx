@@ -89,7 +89,7 @@ export const useChat = () => {
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   return {
     getChatHistory,
