@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/assets/images/logo.webp';
 
@@ -25,12 +25,18 @@ const LoginForm: React.FC = () => {
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
         <div className="flex flex-col items-center">
           <img src={Logo} alt="Hermes Logo" className="w-16 h-16 mb-4" />
-          <h1 className="text-3xl font-semibold text-gray-900">Welcome to Hermes</h1>
-          <p className="text-sm text-gray-600">Log in to Hermes, your reliable messaging companion.</p>
+          <h1 className="text-3xl font-semibold text-gray-900">
+            Welcome to Hermes
+          </h1>
+          <p className="text-sm text-gray-600">
+            Log in to Hermes, your reliable messaging companion.
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <Input
               type="email"
               value={email}
@@ -41,7 +47,9 @@ const LoginForm: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <Input
               type="password"
               value={password}
@@ -52,13 +60,16 @@ const LoginForm: React.FC = () => {
             />
           </div>
           <div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
               Login
             </Button>
           </div>
         </form>
         <div className="text-sm text-center text-gray-500 mt-4">
-          Don't have an account?{" "}
+          Don't have an account?{' '}
           <button
             onClick={navigateToSignup}
             className="text-blue-600 hover:underline"

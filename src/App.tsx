@@ -8,15 +8,27 @@ import PageWrapper from './components/PageWrapper';
 const router = createBrowserRouter([
   {
     path: '/signup',
-    element: <PageWrapper><SignupForm /></PageWrapper>,
+    element: (
+      <PageWrapper>
+        <SignupForm />
+      </PageWrapper>
+    ),
   },
   {
     path: '/login',
-    element: <PageWrapper><LoginForm /></PageWrapper>,
+    element: (
+      <PageWrapper>
+        <LoginForm />
+      </PageWrapper>
+    ),
   },
   {
     path: '/',
-    element: <PageWrapper><ChatPage /></PageWrapper>,
+    element: (
+      <PageWrapper>
+        <ChatPage />
+      </PageWrapper>
+    ),
   },
 ]);
 
