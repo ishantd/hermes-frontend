@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+
 
 const LoginForm: React.FC = () => {
   const { login } = useAuth();
@@ -15,7 +18,7 @@ const LoginForm: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <div>
         <label>Email</label>
-        <input
+        <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -24,14 +27,14 @@ const LoginForm: React.FC = () => {
       </div>
       <div>
         <label>Password</label>
-        <input
+        <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
       </div>
-      <button type="submit">Login</button>
+      <Button type="submit">Login</Button>
     </form>
   );
 };

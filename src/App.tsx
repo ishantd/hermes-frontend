@@ -3,19 +3,20 @@ import LoginForm from './components/Auth/LoginForm';
 import SignupForm from './components/Auth/SignupForm';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ChatPage from './pages/ChatPage';
+import PageWrapper from './components/PageWrapper';
 
 const router = createBrowserRouter([
   {
     path: '/signup',
-    element: <SignupForm />,
+    element: <PageWrapper><SignupForm /></PageWrapper>,
   },
   {
     path: '/login',
-    element: <LoginForm />,
+    element: <PageWrapper><LoginForm /></PageWrapper>,
   },
   {
     path: '/',
-    element: <ChatPage />,
+    element: <PageWrapper><ChatPage /></PageWrapper>,
   },
 ]);
 
