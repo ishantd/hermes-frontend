@@ -30,7 +30,7 @@ export const useChat = () => {
       return {
         sender_type: system_message.sender_type,
         message: system_message.message,
-        timestamp: new Date(system_message.timestamp),
+        timestamp: system_message.timestamp,
         status: MessageStatus.Sent,
       };
     } catch (error) {
@@ -42,7 +42,7 @@ export const useChat = () => {
     return {
       sender_type: 'USER',
       message,
-      timestamp: new Date(),
+      timestamp: new Date().getTime(),
       status: MessageStatus.Pending,
     };
   };
