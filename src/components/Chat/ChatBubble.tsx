@@ -35,7 +35,7 @@ interface Message {
 interface ChatBubbleProps extends Message {
   avatarSeed: string;
   onSystemMessage: (message: Message) => void;
-  onDelete: (messageId: number) => void;
+  onDelete: () => void;
 }
 
 const MessageStatusIndicator: React.FC<{
@@ -75,7 +75,7 @@ const formatTimestamp = (timestamp: number) => {
 
 interface UserChatBubbleProps extends ChatBubbleProps {
   onSystemMessage: (message: Message) => void;
-  onDelete: (messageId: number) => void;
+  onDelete: () => void;
 }
 
 const EditMessageDialog: React.FC<{
@@ -155,8 +155,8 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
     try {
       const response = await sendMessageRequest(messageString);
 
+      response && setMessage({ ...message, id: response.user_message.id, status: MessageStatus.Sent, timestamp: response.user_message.timestamp });
       response && onSystemMessage(response.bot_message);
-      response && setMessage(response.user_message);
 
       setCurrentMessageStatus(MessageStatus.Sent);
     } catch (error) {
@@ -192,7 +192,7 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
       setCurrentMessageStatus(MessageStatus.Deleting);
 
       await deleteMessage(message.id);
-      onDelete(message.id!);
+      onDelete();
     } catch (error) {
       setCurrentMessageStatus(MessageStatus.Sent);
     }
@@ -252,7 +252,7 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
 };
 
 interface SystemChatBubbleProps extends ChatBubbleProps {
-  onDelete: (messageId: number) => void;
+  onDelete: () => void;
 }
 
 const SystemChatBubble: React.FC<SystemChatBubbleProps> = ({
@@ -275,7 +275,7 @@ const SystemChatBubble: React.FC<SystemChatBubbleProps> = ({
       setCurrentMessageStatus(MessageStatus.Deleting);
 
       await deleteMessage(messageId);
-      onDelete(messageId);
+      onDelete();
     } catch (error) {
       setCurrentMessageStatus(MessageStatus.Sent);
     }

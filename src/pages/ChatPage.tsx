@@ -98,11 +98,9 @@ const ChatPage: React.FC = () => {
     setMessages([...messages, message]);
   };
 
-  const handleMessageDelete = (messageId: number) => {
-    const updatedMessages = messages.filter(
-      (message) => message.id !== messageId
-    );
-    setMessages(updatedMessages);
+  const handleMessageDelete = (index: number) => {
+    const updatedMessages = messages.filter((_, i) => i !== index);
+    setMessages([...updatedMessages]);
   };
 
   return (
@@ -142,7 +140,7 @@ const ChatPage: React.FC = () => {
                 {...message}
                 avatarSeed={user?.email || 'user'}
                 onSystemMessage={onSystemMessage}
-                onDelete={handleMessageDelete}
+                onDelete={() => handleMessageDelete(index)}
               />
             ))}
           </div>
