@@ -1,7 +1,10 @@
 import { Message, MessageStatus } from '@/components/Chat/ChatBubble';
 import { Request } from '@/networking';
+import { ChatContext } from '@/pages/ChatPage';
+import { useContext } from 'react';
 
 export const useChat = () => {
+  const context_id = useContext(ChatContext);
   const getChatHistory = async (): Promise<Message[] | undefined> => {
     try {
       const response = await Request('GET', '/chat/history', null);
@@ -24,6 +27,7 @@ export const useChat = () => {
     try {
       const response = await Request('POST', '/chat/send', {
         message,
+        context_id: Number(context_id),
       });
 
       const system_message = response.data.bot_message;
@@ -78,11 +82,21 @@ export const useChat = () => {
     }
   };
 
+  const getContexts = async () => {
+    try {
+      const response = await Request('GET', '/chat/context', null);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return {
     getChatHistory,
     sendMessageRequest,
     getUserMessage,
     deleteMessage,
     editMessage,
+    getContexts,
   };
 };

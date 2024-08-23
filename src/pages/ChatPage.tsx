@@ -1,15 +1,19 @@
 import ChatBubble, { Message } from '@/components/Chat/ChatBubble';
 import { Button } from '@/components/ui/button';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat } from '@/hooks/useChat';
 import { PaperAirplaneIcon } from '@heroicons/react/16/solid';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createContext } from 'react';
+
+const ChatContext = createContext("0");
 
 const MessageBar: React.FC<{
   onMessageSend: (messageText: string) => void;
 }> = ({ onMessageSend }) => {
-  const [messageInput, setMessageInput] = React.useState('');
+  const [messageInput, setMessageInput] = useState('');
 
   const handleMessageSend = () => {
     if (messageInput && messageInput.length) {
@@ -46,13 +50,16 @@ const MessageBar: React.FC<{
 
 const ChatPage: React.FC = () => {
   const { whoami, user, logout } = useAuth();
-  const { getChatHistory, getUserMessage } = useChat();
-  const [messages, setMessages] = React.useState<Message[]>([]);
+  const { getChatHistory, getUserMessage, getContexts } = useChat();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [contexts, setContexts] = useState<any[]>([]);
+  const [selectedContext, setSelectedContext] = useState("0");
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     whoami();
     fetchChatHistory();
+    fetchContexts();
   }, []);
 
   useEffect(() => {
@@ -66,6 +73,13 @@ const ChatPage: React.FC = () => {
   const fetchChatHistory = async () => {
     const messages = await getChatHistory();
     messages && setMessages(messages);
+  };
+
+  const fetchContexts = async () => {
+    const contextData = await getContexts();
+    if (contextData) {
+      setContexts([{ id: "0", title: 'Default' }, ...contextData]);
+    }
   };
 
   const sendUserMessage = (messageText: string) => {
@@ -85,6 +99,7 @@ const ChatPage: React.FC = () => {
   };
 
   return (
+    <ChatContext.Provider value={selectedContext}>
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6 bg-blue-600 text-white flex justify-between items-center">
@@ -94,12 +109,29 @@ const ChatPage: React.FC = () => {
               Wraps on top of GPT, sends back generated text.
             </p>
           </div>
-          <Button
-            onClick={logout}
-            className="bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600"
-          >
-            Logout
-          </Button>
+          <div className="flex items-center space-x-4">
+            <Select
+              value={selectedContext}
+              onValueChange={(value) => setSelectedContext(value)}
+            >
+              <SelectTrigger className="bg-white text-black rounded-lg">
+                <SelectValue placeholder="Select Context" />
+              </SelectTrigger>
+              <SelectContent>
+                {contexts.map((context) => (
+                  <SelectItem key={context.id} value={String(context.id)}>
+                    {context.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={logout}
+              className="bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600"
+            >
+              Logout
+            </Button>
+          </div>
         </div>
         <div
           ref={chatContainerRef}
@@ -120,7 +152,10 @@ const ChatPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </ChatContext.Provider>
   );
+
 };
 
 export default ChatPage;
+export { ChatContext };
