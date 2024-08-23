@@ -20,7 +20,7 @@ export const useChat = () => {
 
   const sendMessageRequest = async (
     message: string
-  ): Promise<{ user_message: Message, bot_message: Message } | undefined> => {
+  ): Promise<{ user_message: Message; bot_message: Message } | undefined> => {
     try {
       const response = await Request('POST', '/chat/send', {
         message,
@@ -43,7 +43,7 @@ export const useChat = () => {
           timestamp: system_message.timestamp,
           id: system_message.id,
           status: MessageStatus.Sent,
-        }
+        },
       };
     } catch (error) {
       throw error;
@@ -61,11 +61,14 @@ export const useChat = () => {
 
   const editMessage = async (messageString: string, messageId: number) => {
     try {
-      await Request('PUT', `/chat/update`, { message: messageString, message_id: messageId });
+      await Request('PUT', `/chat/update`, {
+        message: messageString,
+        message_id: messageId,
+      });
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   const deleteMessage = async (messageId: number) => {
     try {
@@ -73,7 +76,13 @@ export const useChat = () => {
     } catch (error) {
       throw error;
     }
-  }
+  };
 
-  return { getChatHistory, sendMessageRequest, getUserMessage, deleteMessage, editMessage };
+  return {
+    getChatHistory,
+    sendMessageRequest,
+    getUserMessage,
+    deleteMessage,
+    editMessage,
+  };
 };

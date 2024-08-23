@@ -45,7 +45,7 @@ const MessageBar: React.FC<{
 };
 
 const ChatPage: React.FC = () => {
-  const { whoami, user } = useAuth();
+  const { whoami, user, logout } = useAuth();
   const { getChatHistory, getUserMessage } = useChat();
   const [messages, setMessages] = React.useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -58,7 +58,8 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     // Scroll to bottom whenever messages change
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -77,26 +78,42 @@ const ChatPage: React.FC = () => {
   };
 
   const handleMessageDelete = (messageId: number) => {
-    const updatedMessages = messages.filter((message) => message.id !== messageId);
+    const updatedMessages = messages.filter(
+      (message) => message.id !== messageId
+    );
     setMessages(updatedMessages);
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="p-6 bg-blue-600 text-white">
+        <div className="p-6 bg-blue-600 text-white flex justify-between items-center">
           <div>
             <h3 className="text-2xl font-bold">Hermes Chat</h3>
             <p className="text-sm">
               Wraps on top of GPT, sends back generated text.
             </p>
           </div>
+          <Button
+            onClick={logout}
+            className="bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600"
+          >
+            Logout
+          </Button>
         </div>
         <div
           ref={chatContainerRef}
           className="p-4 space-y-4 h-[calc(100vh-256px)] overflow-y-auto"
         >
-          {messages.map((message, index) => <ChatBubble key={index} {...message} avatarSeed={user?.email || 'user'} onSystemMessage={onSystemMessage} onDelete={handleMessageDelete}/>)}
+          {messages.map((message, index) => (
+            <ChatBubble
+              key={index}
+              {...message}
+              avatarSeed={user?.email || 'user'}
+              onSystemMessage={onSystemMessage}
+              onDelete={handleMessageDelete}
+            />
+          ))}
         </div>
         <div className="p-4 border-t">
           <MessageBar onMessageSend={sendUserMessage} />

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useChat } from '@/hooks/useChat';
 import { Button } from '../ui/button';
-import { CheckCircleIcon, PencilIcon, TrashIcon } from '@heroicons/react/16/solid';
+import {
+  CheckCircleIcon,
+  PencilIcon,
+  TrashIcon,
+} from '@heroicons/react/16/solid';
 import {
   Dialog,
   DialogClose,
@@ -10,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog';
 import { Input } from '../ui/input';
 
 enum MessageStatus {
@@ -41,18 +45,24 @@ const MessageStatusIndicator: React.FC<{
 }> = ({ status, onClick }) => {
   switch (status) {
     case MessageStatus.Sending:
-      return <span className='text-gray-600 text-xs'>Sending...</span>;
+      return <span className="text-gray-600 text-xs">Sending...</span>;
     case MessageStatus.Sent:
-      return <span className='text-gray-600 text-xs'>Sent</span>;
+      return <span className="text-gray-600 text-xs">Sent</span>;
     case MessageStatus.Deleting:
       return (
-        <span className='text-red-700 text-xs' onClick={() => onClick && onClick()}>
+        <span
+          className="text-red-700 text-xs"
+          onClick={() => onClick && onClick()}
+        >
           Deleting...
         </span>
       );
     case MessageStatus.Failed:
       return (
-        <span className='text-red-700 text-xs' onClick={() => onClick && onClick()}>
+        <span
+          className="text-red-700 text-xs"
+          onClick={() => onClick && onClick()}
+        >
           Failed. Click To Resend.
         </span>
       );
@@ -69,14 +79,23 @@ interface UserChatBubbleProps extends ChatBubbleProps {
   onDelete: (messageId: number) => void;
 }
 
-const EditMessageDialog: React.FC<{messageText: string, disabled: boolean, onMessageEdit: (messageString: string) => {}}> = ({ messageText, disabled, onMessageEdit }) => {
+const EditMessageDialog: React.FC<{
+  messageText: string;
+  disabled: boolean;
+  onMessageEdit: (messageString: string) => {};
+}> = ({ messageText, disabled, onMessageEdit }) => {
   const [newMessage, setNewMessage] = useState(messageText);
 
   return (
     <Dialog>
       <DialogTrigger>
-        <Button variant='outline' size='icon' onClick={() => onMessageEdit(newMessage)} disabled={disabled}>
-          <PencilIcon className='w-4 h-4' />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onMessageEdit(newMessage)}
+          disabled={disabled}
+        >
+          <PencilIcon className="w-4 h-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -85,10 +104,16 @@ const EditMessageDialog: React.FC<{messageText: string, disabled: boolean, onMes
         </DialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
+            <Input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
           </div>
           <DialogClose asChild>
-            <Button className="px-3 gap-2" onClick={() => onMessageEdit(newMessage)}>
+            <Button
+              className="px-3 gap-2"
+              onClick={() => onMessageEdit(newMessage)}
+            >
               Save
               <CheckCircleIcon className="h-4 w-4" />
             </Button>
@@ -97,7 +122,7 @@ const EditMessageDialog: React.FC<{messageText: string, disabled: boolean, onMes
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 const UserChatBubble: React.FC<UserChatBubbleProps> = ({
   message: messageString,
@@ -110,7 +135,8 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
 }) => {
   const avatarURL = `https://api.dicebear.com/9.x/lorelei/svg?seed=${avatarSeed}`;
 
-  const [currentMessageStatus, setCurrentMessageStatus] = useState<MessageStatus>(messageStatus);
+  const [currentMessageStatus, setCurrentMessageStatus] =
+    useState<MessageStatus>(messageStatus);
   const { sendMessageRequest, deleteMessage, editMessage } = useChat();
 
   const [message, setMessage] = useState<Message>({
@@ -118,7 +144,7 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
     sender_type: 'USER',
     message: messageString,
     timestamp,
-    status: currentMessageStatus
+    status: currentMessageStatus,
   });
 
   useEffect(() => {
@@ -132,7 +158,7 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
 
       response && onSystemMessage(response.bot_message);
       response && setMessage(response.user_message);
-      
+
       setCurrentMessageStatus(MessageStatus.Sent);
     } catch (error) {
       setCurrentMessageStatus(MessageStatus.Failed);
@@ -144,7 +170,10 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
     setCurrentMessageStatus(MessageStatus.Pending);
   };
 
-  const handleEditMessage = async (messageString: string, messageId: number) => {
+  const handleEditMessage = async (
+    messageString: string,
+    messageId: number
+  ) => {
     setCurrentMessageStatus(MessageStatus.Sending);
 
     try {
@@ -155,7 +184,7 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
     } catch (error) {
       setCurrentMessageStatus(MessageStatus.Sent);
     }
-  }
+  };
 
   const handleMessageDelete = async () => {
     if (!message || !message.id) return;
@@ -165,24 +194,43 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
 
       await deleteMessage(message.id);
       onDelete(message.id!);
-    }
-    catch (error) {
+    } catch (error) {
       setCurrentMessageStatus(MessageStatus.Sent);
     }
-  }
+  };
 
   return (
     <React.Fragment>
       <div className={`flex items-end space-x-4 justify-end`}>
         <div className="flex flex-col items-end space-y-2">
           <div className="flex items-end space-x-2 justify-end">
-            <EditMessageDialog messageText={message.message} onMessageEdit={(messageString) => handleEditMessage(messageString, message.id!)} disabled={!message.id || currentMessageStatus !== MessageStatus.Sent} />
-            <Button variant='outline' size='icon' onClick={handleMessageDelete} disabled={!message.id || currentMessageStatus !== MessageStatus.Sent}>
-              <TrashIcon className='w-4 h-4 text-red-700' />
+            <EditMessageDialog
+              messageText={message.message}
+              onMessageEdit={(messageString) =>
+                handleEditMessage(messageString, message.id!)
+              }
+              disabled={
+                !message.id || currentMessageStatus !== MessageStatus.Sent
+              }
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleMessageDelete}
+              disabled={
+                !message.id || currentMessageStatus !== MessageStatus.Sent
+              }
+            >
+              <TrashIcon className="w-4 h-4 text-red-700" />
             </Button>
-            <div className={`flex items-end space-x-4 justify-end bg-blue-500 p-4 rounded-lg`}>
+            <div
+              className={`flex items-end space-x-4 justify-end bg-blue-500 p-4 rounded-lg`}
+            >
               <p className="text-white">{message?.message || messageString}</p>
-              <span className="text-xs text-blue-200" style={{ transform: 'translateY(4px, 8px)' }}>
+              <span
+                className="text-xs text-blue-200"
+                style={{ transform: 'translateY(4px, 8px)' }}
+              >
                 {formatTimestamp(message?.timestamp || timestamp)}
               </span>
             </div>
@@ -193,7 +241,11 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
           />
         </div>
         <div className="items-center space-x-2">
-          <img src={avatarURL} alt="User Avatar" className="w-10 h-10 rounded-full border-2 border-gray-300"/>
+          <img
+            src={avatarURL}
+            alt="User Avatar"
+            className="w-10 h-10 rounded-full border-2 border-gray-300"
+          />
         </div>
       </div>
     </React.Fragment>
@@ -210,9 +262,11 @@ const SystemChatBubble: React.FC<SystemChatBubbleProps> = ({
   timestamp,
   onDelete = () => {},
 }) => {
-  const avatarURL = 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=bot_chat_gpt';
+  const avatarURL =
+    'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=bot_chat_gpt';
 
-  const [currentMessageStatus, setCurrentMessageStatus] = useState<MessageStatus>(MessageStatus.Sent);
+  const [currentMessageStatus, setCurrentMessageStatus] =
+    useState<MessageStatus>(MessageStatus.Sent);
   const { deleteMessage } = useChat();
 
   const handleMessageDelete = async () => {
@@ -220,26 +274,39 @@ const SystemChatBubble: React.FC<SystemChatBubbleProps> = ({
 
     try {
       setCurrentMessageStatus(MessageStatus.Deleting);
-      
+
       await deleteMessage(messageId);
       onDelete(messageId);
-    }
-    catch (error) {
+    } catch (error) {
       setCurrentMessageStatus(MessageStatus.Sent);
     }
-  }
+  };
 
   return (
     <div className={`flex items-end space-x-4 justify-start`}>
-      <img src={avatarURL} alt="User Avatar" className="w-10 h-10 rounded-full border-2 border-gray-300"/>
-      <div className={`flex items-end space-x-4 justify-end bg-gray-800 p-4 rounded-lg`}> 
+      <img
+        src={avatarURL}
+        alt="User Avatar"
+        className="w-10 h-10 rounded-full border-2 border-gray-300"
+      />
+      <div
+        className={`flex items-end space-x-4 justify-end bg-gray-800 p-4 rounded-lg`}
+      >
         <p className="text-white">{messageString}</p>
-        <span className="text-xs text-gray-400" style={{ transform: 'translate(4px, 8px)' }}>
+        <span
+          className="text-xs text-gray-400"
+          style={{ transform: 'translate(4px, 8px)' }}
+        >
           {formatTimestamp(timestamp)}
         </span>
       </div>
-      <Button variant='outline' size='icon' onClick={handleMessageDelete} disabled={!messageId || currentMessageStatus === MessageStatus.Deleting}> 
-        <TrashIcon className='w-4 h-4 text-red-700' />
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={handleMessageDelete}
+        disabled={!messageId || currentMessageStatus === MessageStatus.Deleting}
+      >
+        <TrashIcon className="w-4 h-4 text-red-700" />
       </Button>
     </div>
   );
