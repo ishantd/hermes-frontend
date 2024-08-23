@@ -1,7 +1,7 @@
 import ChatBubble, { Message } from '@/components/Chat/ChatBubble';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat } from '@/hooks/useChat';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const MessageBar: React.FC<{
   onMessageSend: (messageText: string) => void;
@@ -45,11 +45,19 @@ const ChatPage: React.FC = () => {
   const { whoami, user } = useAuth();
   const { getChatHistory, getUserMessage } = useChat();
   const [messages, setMessages] = React.useState<Message[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     whoami();
     fetchChatHistory();
   }, []);
+
+  useEffect(() => {
+    // Scroll to bottom whenever messages change
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const fetchChatHistory = async () => {
     const messages = await getChatHistory();
@@ -70,9 +78,12 @@ const ChatPage: React.FC = () => {
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6 bg-blue-600 text-white">
           <h1 className="text-2xl font-bold">Hermes Chat</h1>
-          <p className="text-sm">This is a chat bot</p>
+          <p className="text-sm">Wraps on top of GPT, sends back generated text.</p>
         </div>
-        <div className="p-4 space-y-4 h-[calc(100vh-200px)] overflow-y-auto">
+        <div
+          ref={chatContainerRef}
+          className="p-4 space-y-4 h-[calc(100vh-200px)] overflow-y-auto"
+        >
           {messages.map((message, index) => {
             const avatarUrl =
               message.sender_type === 'USER'

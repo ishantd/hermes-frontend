@@ -1,5 +1,5 @@
-import { useChat } from '@/hooks/useChat';
 import React, { useState, useEffect } from 'react';
+import { useChat } from '@/hooks/useChat';
 
 enum MessageStatus {
   Pending,
@@ -11,12 +11,13 @@ enum MessageStatus {
 interface ChatBubbleMessageProps {
   messageString: string;
   messageStatus: MessageStatus;
+  timestamp: number;
 }
 
 interface Message {
   sender_type: 'USER' | 'SYSTEM';
   message: string;
-  timestamp: Date;
+  timestamp: number;
   status: MessageStatus;
 }
 
@@ -38,6 +39,11 @@ const MessageStatusIndicator: React.FC<{
   }
 };
 
+const formatTimestamp = (timestamp: number) => {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
 interface UserChatBubbleProps extends ChatBubbleMessageProps {
   onSystemMessage: (message: Message) => void;
 }
@@ -45,6 +51,7 @@ interface UserChatBubbleProps extends ChatBubbleMessageProps {
 const UserChatBubble: React.FC<UserChatBubbleProps> = ({
   messageString,
   messageStatus,
+  timestamp,
   onSystemMessage,
 }) => {
   const [currentMessageStatus, setCurrentMessageStatus] =
@@ -52,7 +59,9 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
   const { sendMessageRequest: sendChatMessageRequest } = useChat();
 
   useEffect(() => {
-    currentMessageStatus === MessageStatus.Pending && sendMessage();
+    if (currentMessageStatus === MessageStatus.Pending) {
+      sendMessage();
+    }
   }, [currentMessageStatus]);
 
   const sendMessage = async () => {
@@ -75,6 +84,7 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
     <React.Fragment>
       <div className="bg-blue-500 p-4 rounded-lg">
         <p className="text-white">{messageString}</p>
+        <span className="text-xs text-gray-300">{formatTimestamp(timestamp)}</span>
       </div>
       <MessageStatusIndicator
         status={currentMessageStatus}
@@ -86,10 +96,12 @@ const UserChatBubble: React.FC<UserChatBubbleProps> = ({
 
 const SystemChatBubble: React.FC<ChatBubbleMessageProps> = ({
   messageString,
+  timestamp,
 }) => {
   return (
     <div className="bg-gray-800 p-4 rounded-lg">
       <p className="text-white">{messageString}</p>
+      <span className="text-xs text-gray-400">{formatTimestamp(timestamp)}</span>
     </div>
   );
 };
@@ -109,11 +121,13 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
     <UserChatBubble
       messageString={message}
       messageStatus={status}
+      timestamp={timestamp}
       onSystemMessage={onSystemMessage}
     />
   ) : (
     <SystemChatBubble
       messageString={message}
+      timestamp={timestamp}
       messageStatus={MessageStatus.Sent}
     />
   );
