@@ -1,6 +1,9 @@
 import ChatBubble, { Message } from '@/components/Chat/ChatBubble';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat } from '@/hooks/useChat';
+import { PaperAirplaneIcon } from '@heroicons/react/16/solid';
 import React, { useEffect, useRef } from 'react';
 
 const MessageBar: React.FC<{
@@ -22,21 +25,21 @@ const MessageBar: React.FC<{
   };
 
   return (
-    <div className="flex items-center p-4 bg-gray-100 rounded-lg shadow-inner">
-      <input
+    <div className="flex items-center">
+      <Input
         type="text"
         onChange={(e) => setMessageInput(e.target.value)}
         value={messageInput}
         onKeyPress={handleKeyPress}
         placeholder="Type your message..."
-        className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
       />
-      <button
+      <Button
         onClick={handleMessageSend}
-        className="ml-4 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+        className="ml-4 p-2 gap-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
       >
         Send
-      </button>
+        <PaperAirplaneIcon className="h-4 w-4" />
+      </Button>
     </div>
   );
 };
@@ -55,8 +58,7 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     // Scroll to bottom whenever messages change
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -74,52 +76,27 @@ const ChatPage: React.FC = () => {
     setMessages([...messages, message]);
   };
 
+  const handleMessageDelete = (messageId: number) => {
+    const updatedMessages = messages.filter((message) => message.id !== messageId);
+    setMessages(updatedMessages);
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6 bg-blue-600 text-white">
-          <h1 className="text-2xl font-bold">Hermes Chat</h1>
-          <p className="text-sm">
-            Wraps on top of GPT, sends back generated text.
-          </p>
+          <div>
+            <h3 className="text-2xl font-bold">Hermes Chat</h3>
+            <p className="text-sm">
+              Wraps on top of GPT, sends back generated text.
+            </p>
+          </div>
         </div>
         <div
           ref={chatContainerRef}
-          className="p-4 space-y-4 h-[calc(100vh-200px)] overflow-y-auto"
+          className="p-4 space-y-4 h-[calc(100vh-256px)] overflow-y-auto"
         >
-          {messages.map((message, index) => {
-            const avatarUrl =
-              message.sender_type === 'USER'
-                ? `https://api.dicebear.com/9.x/lorelei/svg?seed=${user?.email}`
-                : `https://api.dicebear.com/9.x/lorelei/svg?seed=bot`;
-
-            return (
-              <div
-                key={index}
-                className={`flex items-end space-x-4 ${message.sender_type === 'USER' ? 'justify-end' : 'justify-start'}`}
-              >
-                {message.sender_type === 'USER' ? null : (
-                  <img
-                    src={avatarUrl}
-                    alt="User Avatar"
-                    className="w-10 h-10 rounded-full border-2 border-gray-300"
-                  />
-                )}
-                <ChatBubble
-                  key={index}
-                  {...message}
-                  onSystemMessage={onSystemMessage}
-                />
-                {message.sender_type === 'USER' && (
-                  <img
-                    src={avatarUrl}
-                    alt="User Avatar"
-                    className="w-10 h-10 rounded-full border-2 border-gray-300"
-                  />
-                )}
-              </div>
-            );
-          })}
+          {messages.map((message, index) => <ChatBubble key={index} {...message} avatarSeed={user?.email || 'user'} onSystemMessage={onSystemMessage} onDelete={handleMessageDelete}/>)}
         </div>
         <div className="p-4 border-t">
           <MessageBar onMessageSend={sendUserMessage} />

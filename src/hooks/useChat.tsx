@@ -8,33 +8,45 @@ export const useChat = () => {
       const messages = response.data.messages.map((message: any) => ({
         sender_type: message.sender_type,
         message: message.message,
-        timestamp: new Date(message.timestamp),
+        timestamp: message.timestamp,
+        id: message.id,
         status: MessageStatus.Sent,
       }));
       return messages;
     } catch (error) {
-      console.error('Get chat history failed:', error);
+      throw error;
     }
   };
 
   const sendMessageRequest = async (
     message: string
-  ): Promise<Message | undefined> => {
+  ): Promise<{ user_message: Message, bot_message: Message } | undefined> => {
     try {
       const response = await Request('POST', '/chat/send', {
         message,
       });
 
       const system_message = response.data.bot_message;
+      const user_message = response.data.user_message;
 
       return {
-        sender_type: system_message.sender_type,
-        message: system_message.message,
-        timestamp: system_message.timestamp,
-        status: MessageStatus.Sent,
+        user_message: {
+          sender_type: user_message.sender_type,
+          message: user_message.message,
+          timestamp: user_message.timestamp,
+          id: user_message.id,
+          status: MessageStatus.Sent,
+        },
+        bot_message: {
+          sender_type: system_message.sender_type,
+          message: system_message.message,
+          timestamp: system_message.timestamp,
+          id: system_message.id,
+          status: MessageStatus.Sent,
+        }
       };
     } catch (error) {
-      console.error('Send message failed:', error);
+      throw error;
     }
   };
 
@@ -47,5 +59,21 @@ export const useChat = () => {
     };
   };
 
-  return { getChatHistory, sendMessageRequest, getUserMessage };
+  const editMessage = async (messageString: string, messageId: number) => {
+    try {
+      await Request('PUT', `/chat/update`, { message: messageString, message_id: messageId });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const deleteMessage = async (messageId: number) => {
+    try {
+      await Request('DELETE', `/chat/delete`, { message_id: messageId });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  return { getChatHistory, sendMessageRequest, getUserMessage, deleteMessage, editMessage };
 };
