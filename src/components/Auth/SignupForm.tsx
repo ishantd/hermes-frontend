@@ -10,11 +10,23 @@ const SignupForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    signup(email, name, password);
+    setError(null); // Reset error state
+    setIsLoading(true); // Set loading state
+
+    try {
+      await signup(email, name, password);
+      setIsLoading(false);
+      navigate('/'); // Redirect to the main page after successful signup
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message || 'An error occurred. Please try again.');
+    }
   };
 
   const navigateToLogin = () => {
@@ -34,6 +46,7 @@ const SignupForm: React.FC = () => {
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <p className="text-red-600 text-center">{error}</p>}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -77,8 +90,9 @@ const SignupForm: React.FC = () => {
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={isLoading}
             >
-              Sign Up
+              {isLoading ? 'Signing Up...' : 'Sign Up'}
             </Button>
           </div>
         </form>

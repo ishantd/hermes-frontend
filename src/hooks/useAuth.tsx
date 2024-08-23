@@ -20,8 +20,13 @@ export const useAuth = () => {
       });
       setUser(response.data);
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      if (error.detail) {
+        throw new Error(error.detail);
+      } else {
+        throw new Error('An error occurred during signup.');
+      }
     }
   };
 
@@ -34,8 +39,13 @@ export const useAuth = () => {
       });
       setUser(response.data);
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup failed:', error);
+      if (error.detail) {
+        throw new Error(error.detail);
+      } else {
+        throw new Error('An error occurred during signup.');
+      }
     }
   };
 
@@ -43,10 +53,10 @@ export const useAuth = () => {
     try {
       const response = await Request('GET', '/auth/whoami');
       setUser(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Whoami failed:', error);
-      // call logout if whoami fails
-      logout();
+      logout(); // Call logout if whoami fails
+      throw new Error('Failed to verify user session. Please log in again.');
     }
   };
 
@@ -55,8 +65,9 @@ export const useAuth = () => {
       await Request('POST', '/auth/logout');
       setUser(null);
       navigate('/login');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout failed:', error);
+      throw new Error('An error occurred during logout.');
     }
   };
 

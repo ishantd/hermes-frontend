@@ -9,11 +9,23 @@ const LoginForm: React.FC = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
+    setError(null); // Reset error state
+    setIsLoading(true); // Set loading state
+
+    try {
+      await login(email, password);
+      setIsLoading(false);
+      navigate('/'); // Redirect to the main page after successful login
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message || 'An error occurred. Please try again.');
+    }
   };
 
   const navigateToSignup = () => {
@@ -33,6 +45,7 @@ const LoginForm: React.FC = () => {
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <p className="text-red-600 text-center">{error}</p>}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -63,8 +76,9 @@ const LoginForm: React.FC = () => {
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? 'Logging In...' : 'Login'}
             </Button>
           </div>
         </form>
