@@ -35,7 +35,7 @@ export const useAuth = () => {
 
   const whoami = async () => {
     try {
-      const response = await Request('GET', '/auth/whoami', null);
+      const response = await Request('GET', '/auth/whoami');
       setUser(response.data);
     } catch (error) {
       console.error('Whoami failed:', error);
@@ -46,7 +46,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      await Request('POST', '/auth/logout', null);
+      await Request('POST', '/auth/logout');
       setUser(null);
       navigate('/login');
     } catch (error) {

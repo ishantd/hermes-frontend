@@ -42,7 +42,7 @@ const RemoveHeader = (key: string) => {
   delete instance.defaults.headers.common[key];
 };
 
-const Request = async (method: string, url: string, body: any) => {
+const Request = async (method: string, url: string, body?: any) => {
   const requestOptions = {
     method: method,
     url: url,
