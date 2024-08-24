@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
-    "build": "VITE_ENVIRONMENT=PRODUCTION tsc -b && vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "vite preview --port 3000",
     "prepare": "husky install"
   },
   "dependencies": {
