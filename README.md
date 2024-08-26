@@ -32,3 +32,12 @@ if you want to not setup the backend locally, you can adjust the `.env` file to 
 ```shell
 VITE_ENVIRONMENT=PRODUCTION
 ```
+
+
+### 5. Adjust env (optional)
+
+Run playwright tests
+
+```shell
+npx playwright test
+```
