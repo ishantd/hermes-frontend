@@ -34,7 +34,7 @@ VITE_ENVIRONMENT=PRODUCTION
 ```
 
 
-### 5. Adjust env (optional)
+### 5. Run tests (optional)
 
 Run playwright tests
 
