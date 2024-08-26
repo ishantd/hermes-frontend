@@ -4,6 +4,8 @@ test('test', async ({ page }) => {
   // Go to the login page -- simply
   await page.goto('https://hermes.ishantdahiya.com/');
   await page.goto('https://hermes.ishantdahiya.com/signup');
+
+  // try signing up with an existing email
   await page.getByPlaceholder('Enter your email').click();
   await page.getByPlaceholder('Enter your email').fill('test@artisan.co');
   await page.getByPlaceholder('Enter your name').click();
